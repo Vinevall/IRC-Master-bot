@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+
+bold=$'\x02'
+green=$'\x0303'
+magenta=$'\x0306'
+lightgreen=$'\x0309'
+cyan=$'\x0310'
+lightcyan=$'\x0311'
+lightgray=$'\x0315'
+reset=$'\x0f'
+
+while read oldrev newrev refname
+do
+  repo=$(basename "$(pwd)" .git)
+  user=$(git log -1 --pretty=format:'%an' ${newrev})
+  commits=$(git log --pretty=oneline ${oldrev}..${newrev})
+
+  echo "oldrev = '$oldrev'" >> /tmp/git-debug.log
+  echo "newrev = '$newrev'" >> /tmp/git-debug.log
+  echo "refname = '$refname'" >> /tmp/git-debug.log
+
+  if [[ "${refname}" == refs/heads/* ]]; then
+    branch=${refname#refs/heads/}
+    echo "${cyan}-=[ ${bold}${repo}${bold} ]=-${reset} uppdaterades av ${bold}${user}${bold} till grenen ${lightcyan}${bold}${branch}${bold}${reset}:" >> /tmp/git-push-msg
+  elif [[ "{$refname}" == refs/tags/* ]]; then
+    tag=${refname#refs/tags/}
+    echo "${cyan}-=[ ${bold}${repo}${bold} ]=-${reset} har fått en ny tag:${bold}${tag}${bold} av ${bold}${user}${bold}" >> /tmp/git-push-msg 
+  else
+    echo "❌ Okänd ref: $refname" >> /tmp/git-push-msg 
+  fi
+  
+  #echo "${lightgray}${commits}${reset}" >> /tmp/git-push-msg
+  while IFS= read -r line; do
+    echo -e "${lightgray}${line}${reset}" >> /tmp/git-push-msg
+  done <<< "${commits}"
+done

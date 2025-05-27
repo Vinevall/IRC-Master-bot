@@ -1,0 +1,18 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+if [ ! -d ".venv" ]; then
+    echo "Python virtual environment is missing...recreating the virtual environment"
+    python -m venv .venvi
+    cd .venv
+    pip install inotify_simpl
+    pip install holidays
+    cd ..
+
+source .venv/bin/activate
+
+./irc-master-bot.py
+
+exit 0
