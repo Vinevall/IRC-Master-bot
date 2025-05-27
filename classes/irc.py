@@ -3,6 +3,9 @@ import ssl
 import sys
 import threading
 import time
+from .printlog import Log
+
+log = Log()
 
 class IRC:
     def __init__(self, nickname: str, username: str, fullname: str, password: str, server_password: str = ""):
@@ -23,10 +26,10 @@ class IRC:
                 print(f">> {message.strip()}")
                 self.irc.send(message.encode('utf-8'))
         except Exception as e:
-            print(f"[INPUT ERROR] {e}")
+            log.error(f"[INPUT ERROR] {e}")
 
     def connect(self, server: str, port: int, use_ssl: bool):
-        print(f"Connecting to IRC server with IP-address: {server}, on port: {port}, with SSL: {use_ssl}")
+        log.info(f"Connecting to IRC server with IP-address: {server}, on port: {port}, with SSL: {use_ssl}")
         context = ssl.create_default_context()
         raw_socket = socket.create_connection((server, port))
         self.irc = context.wrap_socket(raw_socket, server_hostname=server) if use_ssl else raw_socket
@@ -68,7 +71,7 @@ class IRC:
                 break    
 
     def close(self):
-        print("Closing the connection to the IRC server...")
+        log.info("Closing the connection to the IRC server...")
         self.irc.close()
         sys.exit(0)
 

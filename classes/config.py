@@ -1,5 +1,8 @@
 import os
 import configparser
+from .printlog import Log
+
+log = Log()
 
 class ConfigHandler:
     host: str
