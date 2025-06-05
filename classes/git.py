@@ -2,21 +2,24 @@ import os
 import socket
 import sys
 from inotify_simple import INotify, flags
+from .printlog import Log
 
+log = Log()
 
 class GitWatch:
     def __init__(self, irc: socket.socket, git_push_file: str, channel: str):
         self.irc = irc
         self.channel = channel
         self.git_file = git_push_file
+        log.info("The Git watcher is activated.")
         if not os.path.exists(self.git_file):
             try:
                 with open(self.git_file, 'w') as f:
                     pass
                 os.chmod(self.git_file, 0o666)
-                print(f"Created the file: {self.git_file}")
+                log.info(f"Created the file: {self.git_file}")
             except Exception as e:
-                print(f"Unable to create file {self.git_file}: {e}")
+                log.error(f"Unable to create file {self.git_file}: {e}")
                 sys.exit(1)
 
         self.irc.send(f"JOIN {self.channel}\r\n".encode('utf-8'))
@@ -42,6 +45,6 @@ class GitWatch:
                                         self.irc.send(msg.encode('utf-8'))
                             last_size = current_size
         except Exception as e:
-            print(f"[GIT WATCH ERROR] {e}")
+            log.error(f"[GIT WATCH ERROR] {e}")
 
 

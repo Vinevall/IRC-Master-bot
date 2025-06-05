@@ -3,4 +3,5 @@
 *$py.class
 
 config.cfg
-calendar.txt
+*.json
+*.old

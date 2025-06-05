@@ -5,7 +5,7 @@ cd "$SCRIPT_DIR"
 
 if [ ! -d ".venv" ]; then
     echo "Python virtual environment is missing...recreating the virtual environment"
-    python -m venv .venvi
+    python -m venv .venv
     cd .venv
     pip install inotify_simpl
     pip install holidays
@@ -13,6 +13,6 @@ if [ ! -d ".venv" ]; then
 
 source .venv/bin/activate
 
-./irc-master-bot.py
+python main.py
 
 exit 0
