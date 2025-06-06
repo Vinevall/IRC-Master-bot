@@ -1,18 +1,36 @@
 #!/bin/bash
 
+if ! command -v screen &> /dev/null; then
+    echo "Error: Can't find screen in your path. Please insall with:"
+    echo "sudo pacman -S screen         # Arch/CachyOS/Manjaro"
+    echo "sudo apt install screen       # Debian/Ubuntu"
+    echo "sudo yum install screen       # CentOS/RHEL"
+    exit 1
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+cd "${SCRIPT_DIR}"
+
 
 if [ ! -d ".venv" ]; then
     echo "Python virtual environment is missing...recreating the virtual environment"
     python -m venv .venv
-    cd .venv
+    source .venv/bin/activate
     pip install inotify_simpl
     pip install holidays
-    cd ..
+    deactivate
+fi
 
-source .venv/bin/activate
-
-python main.py
+screen -dmS IMB bash -c '
+    source .venv/bin/activate || { echo "Unable to activate virtual environment"; exit 1; }
+    
+    python main.py
+    
+    deactivate
+    exit
+'
+echo "IRC-Master-bot is now running in a screen-session."
+echo "Use: 'screen -r IMB'"
 
 exit 0
+
