@@ -31,7 +31,7 @@ class ScrumMaster():
                 
             if now.hour == 6 and now.minute == 0 and now.second == 0:
                 if matches:
-                    log.info(f"Idag ({today_str}) är det {', '.join(matches)}")
+                    log.info(f"Idag ({today_str}) är det {matches}")
                 else:
                     log.info("Idag är det arbersdag!")
                     print(f">> PRIVMSG {self.channel} :Vecka: {week}")
