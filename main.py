@@ -3,10 +3,9 @@ import sys
 import time
 import threading
 from classes.config import ConfigHandler
-from classes.irc import IRC
+from classes.irc import IRC, isRunning
 from classes.git import GitWatch
 
-isRunning = True
 
 if __name__ == "__main__":
     # Reading the config file

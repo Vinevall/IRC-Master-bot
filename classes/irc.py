@@ -8,6 +8,8 @@ from datetime import date
 from .printlog import Log
 from .scrum import ScrumMaster, cm
 
+isRunning = True
+
 # Move this to the config
 TEAM=["Jessica", "Jonas", "Michael"]
 
@@ -24,10 +26,13 @@ class IRC:
         self.server_password = server_password
 
     def send(self, message: str):
+        global isRunning
         try:
             if message.lower() in ("exit", "quit"):
                 self.irc.send("QUIT\r\n".encode('utf-8'))
                 self.close
+                isRunning = False
+                sys.exit(0)
             if not message.endswith("\r\n"):
                 message += "\r\n"
                 print(f">> {message.strip()}")
@@ -103,25 +108,31 @@ class IRC:
         if channel == "scrum_master" or channel == "ScrumMaster":
             if command == "!hjälp" or command == "!help":
                 #log.info("Nu ska vi skriva ut hjälpen")
-                message_list = [f"Vad behöver du hjälp med, {user}?", "    \x02!hjälp\x02    -    Se denna hjälp.", "    \x02!jobbar\x02    -    Visar alla som arbeter.", "    \x02!semester\x02    -    Registrera din semester"]
+                message_list = [f"Vad behöver du hjälp med, {user}?"]
+                message_list.append("==----------------------------------oOo----------------------------------==")
+                message_list.append("\x02!hjälp\x02                               - Se denna hjälp.")
+                message_list.append("\x02!jobbar\x02                              - Visar alla som arbeter.")
+                message_list.append("\x02!semester\x02 [+/-v30 eller +/-250704]   - Registrera eller radera din semester")
+                message_list.append("==----------------------------------oOo----------------------------------==")
                 for message in message_list:
-                    print(f">> {message}")
+                    time.sleep(0.1)
                     self.send(f"PRIVMSG {user} {message}")
             elif command == "!jobbar" or command == "!working":
                 today = date.today()
                 today_str = today.strftime("%y%m%d")
                 message = cm.todays_work_force(f"{today_str}", TEAM)
-                #message = "Inte ännu!"
                 self.send(f"PRIVMSG {user} {message}")
             elif command == "!semester" or command == "!vacation":
-                self.send(f"PRIVMSG {user} {variables}")
-                if variables.startswith('+'):
-                    # lägga till en vecka eller dag
-                    print("Pruutt")
-
-                elif variables.startswith('-'):
-                    # Bort med en vecka eller dag
-                    print("Jätte!")
+                if not variables:
+                    cm.list_all_vacations()
+                else:
+                    self.send(f"PRIVMSG {user} {variables}")
+                    if variables.startswith('+'):
+                        # lägga till en vecka eller dag
+                        print("Pruutt")
+                    elif variables.startswith('-'):
+                        # Bort med en vecka eller dag
+                        print("Jätte!")
 
 
 

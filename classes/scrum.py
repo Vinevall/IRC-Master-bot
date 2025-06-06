@@ -32,8 +32,10 @@ class ScrumMaster():
             if now.hour == 6 and now.minute == 0 and now.second == 0:
                 if matches:
                     log.info(f"Idag ({today_str}) är det {matches}")
+                    self.irc.send(f"TOPIC {self.channel} :{matches}\r\n".encode('utf-8'))
                 else:
                     log.info("Idag är det arbersdag!")
+                    self.irc.send(f"TOPIC {self.channel} :{today}\r\n".encode('utf-8'))
                     print(f">> PRIVMSG {self.channel} :Vecka: {week}")
                     self.irc.send(f"PRIVMSG {self.channel} :Vecka: {week}\r\n".encode('utf-8'))
                     print(f">> PRIVMSG {self.channel} :Vad gjorde jag igår?")
