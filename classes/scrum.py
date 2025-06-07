@@ -24,11 +24,12 @@ class ScrumMaster():
         log.info("Scheduler started. Waiting for 06:00...")
         while True:
             now = datetime.now()
+            dayname = now.weekday()
             week = now.isocalendar() [1]
             today = date.today()
             today_str = today.strftime("%y%m%d")
             matches = cm.check_date(today_str)
-                
+
             if now.hour == 6 and now.minute == 0 and now.second == 0:
                 if matches:
                     log.info(f"Idag ({today_str}) är det {matches}")
@@ -36,13 +37,9 @@ class ScrumMaster():
                 else:
                     log.info("Idag är det arbersdag!")
                     self.irc.send(f"TOPIC {self.channel} :{today}\r\n".encode('utf-8'))
-                    print(f">> PRIVMSG {self.channel} :Vecka: {week}")
                     self.irc.send(f"PRIVMSG {self.channel} :Vecka: {week}\r\n".encode('utf-8'))
-                    print(f">> PRIVMSG {self.channel} :Vad gjorde jag igår?")
                     self.irc.send(f"PRIVMSG {self.channel} :Vad gjorde jag igår?\r\n".encode('utf-8'))
-                    print(f">> PRIVMSG {self.channel} :Vad ska jag göra idag?")
                     self.irc.send(f"PRIVMSG {self.channel} :Vad ska jag göra idag?\r\n".encode('utf-8'))
-                    print(f">> PRIVMSG {self.channel} :Ser jag några hinder för att utföra mitt uppdrag?")
                     self.irc.send(f"PRIVMSG {self.channel} :Ser jag några hinder för att utföra mitt uppdrag?\r\n".encode('utf-8'))
                 
                 time.sleep(86300) #86400  

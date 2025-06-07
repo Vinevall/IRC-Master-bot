@@ -11,7 +11,7 @@ from .scrum import ScrumMaster, cm
 isRunning = True
 
 # Move this to the config
-TEAM=["Jessica", "Jonas", "Michael"]
+TEAM=["Jessica", "Joakim", "Jonas", "Michael", "Tomas"]
 
 # Constructing the log class
 log = Log()
