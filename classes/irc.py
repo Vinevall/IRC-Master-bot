@@ -90,10 +90,6 @@ class IRC:
                 break  
 
     def handle_comman(self, channel: str, user: str, command: str):
-        # Need to split the command here!
-        # !hjälp
-        # !ledig [+/-v30 eller +/-250606]
-        # !jobbar
         command_list = ""
         variables = ""
 
@@ -124,7 +120,10 @@ class IRC:
                 self.send(f"PRIVMSG {user} {message}")
             elif command == "!semester" or command == "!vacation":
                 if not variables:
-                    cm.list_all_vacations()
+                    message = cm.list_all_vacations()
+                    for line in message:
+                        self.send(f"PRIVMSG {user} {line}")
+                        time.sleep(0.1)
                 else:
                     self.send(f"PRIVMSG {user} {variables}")
                     if variables.startswith('+'):
@@ -134,9 +133,9 @@ class IRC:
                         self.send(f"PRIVMSG {user} {message}")
                     elif variables.startswith('-'):
                         # Bort med en vecka eller dag
-                        print("Jätte!")
-
-
+                        beg, end = variables.split("-")
+                        message = cm.del_vacation(f"{user}", [f"{end}"])
+                        self.send(f"PRIVMSG {user} {message}")
 
     def activate_scrum_master(self):
         # Constructing the master

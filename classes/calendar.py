@@ -177,17 +177,17 @@ class CalendarManager:
                             datum_str = datum.strftime("%y%m%d")
                             if datum_str in self.data["Vacations"][name]:
                                 self.data["Vacations"][name].remove(datum_str)
-                                message = f"vecka: {item} är nu radderad som semester"
+                                message = f"vecka: {item} är nu raderad som semester"
                             else:
                                 message = f"Vecka: {item} finns inte registrerad som semester"
                     except ValueError:
-                        message = f"Veckan: {item} du vill raddera, är inte registrerad som semester"
+                        message = f"Veckan: {item} du vill radera, är inte registrerad som semester"
 
                 elif item.isdigit() and len(item) == 6:
                     if self._validate_date(item):
                         if item in self.data["Vacations"][name]:
                             self.data["Vacations"][name].remove(item)
-                            message = f"Datum: {item} är nu radderad som semester"
+                            message = f"Datum: {item} är nu raderad som semester"
                         else:
                             message = f"Datum: {item} finns inte registrerad som semester"
                     else:
