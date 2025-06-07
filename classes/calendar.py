@@ -214,26 +214,29 @@ class CalendarManager:
 
         return workers
 
-    def list_all_vacations(self):
+    def list_all_vacations(self) -> list[str]:
+        message = ["==----------------------------------oOo----------------------------------=="]
+
         if "Vacations" not in self.data:
-            print("📭 Inga semestrar registrerade.")
-            return
+            message.append("📭 Inga semestrar registrerade.")
+        else:
+            for person, datum_lista in self.data["Vacations"].items():
+                message.append(f"🧑 {person}:")
+                weeks = self._date_to_week(datum_lista)
+                hole_weeks = []
+                other_dates = []
 
-        for person, datum_lista in self.data["Vacations"].items():
-            print(f"\n🧑 {person}:")
-            weeks = self._date_to_week(datum_lista)
-            hole_weeks = []
-            other_dates = []
+                for week, datum in sorted(weeks.items()):
+                    if len(datum) == 7:
+                        hole_weeks.append(f"v{str(week).zfill(2)}")
+                    else:
+                        other_dates.extend(sorted(datum))
 
-            for week, datum in sorted(weeks.items()):
-                if len(datum) == 7:
-                    hole_weeks.append(f"v{str(week).zfill(2)}")
-                else:
-                    other_dates.extend(sorted(datum))
+                if hole_weeks:
+                    message.append(f"📆 Veckor: {', '.join(hole_weeks)}")
+                if other_dates:
+                    message.append(f"📅 Datum:  {', '.join(other_dates)}")
 
-            if hole_weeks:
-                print(f"  📆 Veckor: {', '.join(hole_weeks)}")
-            if other_dates:
-                print(f"  📅 Datum:  {', '.join(other_dates)}")
+                message.append("==----------------------------------oOo----------------------------------==")
 
-
+        return message
