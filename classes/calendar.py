@@ -159,36 +159,45 @@ class CalendarManager:
 
         return message
 
-    def del_vacation(self, name: str, items: list[str]):
+    def del_vacation(self, name: str, items: list[str]) -> str:
         name = name.strip().capitalize()
+        message = ""
 
         if "Vacations" not in self.data or name not in self.data["Vacations"]:
-            print(f"Användaren '{name}' har inga registrerade semestrar.")
-            return
+            message = f"Användaren '{name}' har inga registrerade semestrar."
+        else:
+            for item in items:
+                item = item.strip().lower()
 
-        for item in items:
-            item = item.strip().lower()
+                if item.startswith("v") and item[1:].isdigit() and len(item[1:]) == 2:
+                    week = int(item[1:])
+                    try:
+                        for day in range(1, 8):
+                            datum = date.fromisocalendar(self.year, week, day)
+                            datum_str = datum.strftime("%y%m%d")
+                            if datum_str in self.data["Vacations"][name]:
+                                self.data["Vacations"][name].remove(datum_str)
+                                message = f"vecka: {item} är nu radderad som semester"
+                            else:
+                                message = f"Vecka: {item} finns inte registrerad som semester"
+                    except ValueError:
+                        message = f"Veckan: {item} du vill raddera, är inte registrerad som semester"
 
-            if item.startswith("v") and item[1:].isdigit() and len(item[1:]) == 2:
-                week = int(item[1:])
-                try:
-                    for day in range(1, 8):
-                        datum = date.fromisocalendar(self.year, week, day)
-                        datum_str = datum.strftime("%y%m%d")
-                        if datum_str in self.data["Vacations"][name]:
-                            self.data["Vacations"][name].remove(datum_str)
-                except ValueError:
-                    print(f"Veckan({item}) du vill raddera för {name} är inte registrerad")
+                elif item.isdigit() and len(item) == 6:
+                    if self._validate_date(item):
+                        if item in self.data["Vacations"][name]:
+                            self.data["Vacations"][name].remove(item)
+                            message = f"Datum: {item} är nu radderad som semester"
+                        else:
+                            message = f"Datum: {item} finns inte registrerad som semester"
+                    else:
+                        message = f"Ogiltigt datum: {item}"
 
-            elif item.isdigit() and len(item) == 6:
-                if self._validate_date(item):
-                    if item in self.data["Vacations"][name]:
-                        self.data["Vacations"][name].remove(item)
                 else:
-                    print(f"Ogiltigt datum: {item}")
+                    message = f"Ogiltigt format ignorerat: {item}"
 
-            else:
-                print(f"Ogiltigt format ignorerat: {item}")
+        self._save_json(self.filename)
+        return message
 
 
     def todays_work_force(self, datum: str, team: list[str]) -> list[str]:
