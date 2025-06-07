@@ -114,8 +114,9 @@ class CalendarManager:
 
         return None
 
-    def add_vacation(self, name: str, items: list[str]):
+    def add_vacation(self, name: str, items: list[str]) -> str:
         name = name.strip().capitalize()
+        message = ""
 
         if "Vacations" not in self.data:
             self.data["Vacations"] = {}
@@ -134,21 +135,29 @@ class CalendarManager:
                         datum_str = datum.strftime("%y%m%d")
                         if datum_str not in self.data["Vacations"][name]:
                             self.data["Vacations"][name].append(datum_str)
+                            message = f"Vecka: {item} är nu registrerad som semester"
+                        else:
+                            message = f"Vecka: {item} finns redan registrerad som semester"
                 except ValueError:
-                    log.error(f"Ogiltig vecka: {item}")
+                    message = f"Ogiltig vecka: {item}"
 
             # Hantera datum i format YYMMDD
             elif item.isdigit() and len(item) == 6:
                 if self._validate_date(item):
                     if item not in self.data["Vacations"][name]:
                         self.data["Vacations"][name].append(item)
+                        message = f"Datum: {item} är nu registrerad som semester"
+                    else:
+                        message = f"Datum: {item} finns redan registrerad som semester"
                 else:
-                    print(f"Ogiltigt datum: {item}")
+                    message = f"Ogiltigt datum: {item}"
 
             else:
-                print(f"Ogiltigt format ignorerat: {item}")
+                message = f"Ogiltigt format ignorerat: {item}"
 
         self._save_json(self.filename)
+
+        return message
 
     def del_vacation(self, name: str, items: list[str]):
         name = name.strip().capitalize()

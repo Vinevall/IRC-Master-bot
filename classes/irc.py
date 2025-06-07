@@ -129,7 +129,9 @@ class IRC:
                     self.send(f"PRIVMSG {user} {variables}")
                     if variables.startswith('+'):
                         # lägga till en vecka eller dag
-                        print("Pruutt")
+                        beg, end = variables.split("+")
+                        message = cm.add_vacation(f"{user}", [f"{end}"])
+                        self.send(f"PRIVMSG {user} {message}")
                     elif variables.startswith('-'):
                         # Bort med en vecka eller dag
                         print("Jätte!")
