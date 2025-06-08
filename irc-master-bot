@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Add check if python is installed and path
+#PYTHON_CMD = ("python3", "python")
+#for cmd in "${PYTHON_CMD[@]}"; do
+#  if command -v "$cmd" > /dev/null 2>&1; then
+#    PYTHON = cmd    
+#  else
+#    exit 1
+#  fi
+##done
+
 if ! command -v screen &> /dev/null; then
     echo "Error: Can't find screen in your path. Please insall with:"
     echo "sudo pacman -S screen         # Arch/CachyOS/Manjaro"
@@ -14,7 +24,7 @@ cd "${SCRIPT_DIR}"
 
 if [ ! -d ".venv" ]; then
     echo "Python virtual environment is missing...recreating the virtual environment"
-    python -m venv .venv
+    python3 -m venv .venv
     source .venv/bin/activate
     pip install inotify_simpl
     pip install holidays
@@ -24,7 +34,7 @@ fi
 screen -dmS IMB bash -c '
     source .venv/bin/activate || { echo "Unable to activate virtual environment"; exit 1; }
     
-    python main.py
+    python3 main.py
     
     deactivate
     exit
