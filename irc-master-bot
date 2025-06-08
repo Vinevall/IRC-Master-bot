@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# Add check if python is installed and path
-#PYTHON_CMD = ("python3", "python")
-#for cmd in "${PYTHON_CMD[@]}"; do
-#  if command -v "$cmd" > /dev/null 2>&1; then
-#    PYTHON = cmd    
-#  else
-#    exit 1
-#  fi
-##done
+if ! command -v python3 > /dev/null 2>&1; then
+    echo "Error: Can't find python3 in your path. Please insall with:"
+    echo "sudo pacman -S python3         # Arch/CachyOS/Manjaro"
+    echo "sudo apt install python3       # Debian/Ubuntu"
+    echo "sudo yum install python3       # CentOS/RHEL"
+    exit 1
+fi
 
 if ! command -v screen &> /dev/null; then
     echo "Error: Can't find screen in your path. Please insall with:"
@@ -26,7 +24,7 @@ if [ ! -d ".venv" ]; then
     echo "Python virtual environment is missing...recreating the virtual environment"
     python3 -m venv .venv
     source .venv/bin/activate
-    pip install inotify_simpl
+    pip install inotify_simple
     pip install holidays
     deactivate
 fi
