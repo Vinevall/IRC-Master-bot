@@ -28,6 +28,7 @@ class ScrumMaster():
             today = date.today()
             today_str = today.strftime("%y%m%d")
             matches = cm.check_date(today_str)
+            dayofweek = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"]
 
             if now.hour == 6 and now.minute == 0 and now.second == 0:
                 if matches:
@@ -38,7 +39,7 @@ class ScrumMaster():
 
                     message = ["==------------------------------oOo------------------------------=="]
                     message.append(f"Vecka: {week}")
-                    message.append(f"Idag är det {today.weekday()} den {today.day}/{today.month} {now.year}")
+                    message.append(f"Idag är det {dayofweek[today.weekday()]} den {today.day}/{today.month} {now.year}")
                     message.append("Vad gjorde jag igår?")
                     message.append("Vad ska jag göra idag?")
                     message.append("Ser jag några hinder för att utföra mitt uppdrag?")
