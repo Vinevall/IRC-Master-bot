@@ -37,12 +37,13 @@ class ScrumMaster():
                 else:
                     self.irc.send(f"TOPIC {self.channel} :{today}\r\n".encode('utf-8'))
 
-                    message = ["==------------------------------oOo------------------------------=="]
+                    message = ["==----------------------------oOo----------------------------=="]
                     message.append(f"Vecka: {week}")
                     message.append(f"Idag är det {dayofweek[today.weekday()]} den {today.day}/{today.month} {now.year}")
                     message.append("Vad gjorde jag igår?")
                     message.append("Vad ska jag göra idag?")
                     message.append("Ser jag några hinder för att utföra mitt uppdrag?")
+                    message = ["==----------------------------oOo----------------------------=="]
 
                     for line in message:
                         self.irc.send(f"PRIVMSG {self.channel} :{line}\r\n".encode('utf-8'))

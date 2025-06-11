@@ -1,6 +1,7 @@
 import os
 import socket
 import sys
+import time
 from inotify_simple import INotify, flags
 from .printlog import Log
 
@@ -43,6 +44,7 @@ class GitWatch:
                                         msg = f"PRIVMSG {self.channel} :{line}\r\n"
                                         print(f">> {msg.strip()}")
                                         self.irc.send(msg.encode('utf-8'))
+                                        time.sleep(0.1)
                             last_size = current_size
         except Exception as e:
             log.error(f"[GIT WATCH ERROR] {e}")

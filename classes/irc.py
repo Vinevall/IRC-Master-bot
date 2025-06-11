@@ -19,11 +19,16 @@ log = Log()
 class IRC:
     def __init__(self, nickname: str, username: str, fullname: str, password: str, server_password: str = ""):
         self.irc: socket.socket
+        self.server = ""
+        self.port = 6697
+        self.use_ssl = True
         self.nickname = nickname
         self.username = username
         self.password = password
         self.fullname = fullname
         self.server_password = server_password
+        self.last_activity = time.time()
+        self.timeout_threshold = 180
 
     def send(self, message: str):
         global isRunning
@@ -41,6 +46,9 @@ class IRC:
             log.error(f"[INPUT ERROR] {e}")
 
     def connect(self, server: str, port: int, use_ssl: bool):
+        self.server = server
+        self.port = port
+        self.use_ssl = use_ssl
         log.info(f"Connecting to IRC server with IP-address: {server}, on port: {port}, with SSL: {use_ssl}")
         context = ssl.create_default_context()
         raw_socket = socket.create_connection((server, port))
@@ -58,15 +66,31 @@ class IRC:
 
         return self.irc
 
+    def reconnect(self):
+        log.info("Reconnecting to the server...")
+        try:
+            self.irc.close()
+        except Exception:
+            pass
+        time.sleep(5)  # Vänta före nytt försök
+        self.connect(self.server, self.port, self.use_ssl)
+
+    def check_connection(self):
+        if time.time() - self.last_activity > self.timeout_threshold:
+            log.error("Server connection is dead - reconnecting...")
+            self.reconnect()
+
     def server_event(self):
         while True:
             try:
                 data = self.irc.recv(4096).decode('utf-8', errors='ignore')
                 if not data:
-                    break
+                    raise Exception("The connection closed by the server.")
+                    #break
+
+                self.last_activity = time.time()
 
                 for line in data.strip().split('\r\n'):
-                    #match = re.match(r"^:(\w+)!.*?PRIVMSG\s+(#[\w\-]+)\s+:(.*)", line)
                     match = re.match(r"^:(\w+)!.*?PRIVMSG\s+([#\w\-]+)\s+:(.*)", line)
 
                     if line.startswith("PING"):
@@ -84,10 +108,11 @@ class IRC:
                             self.handle_comman(channel, username, message)
                     else:
                         print(f"<< {line}")
-
+            except socket.timeout:
+                self.check_connection()
             except Exception as e:
-                print(f"[SERVER ERROR] {e}")
-                break  
+                log.error(f"[SERVER ERROR] {e}")
+                self.reconnect()
 
     def handle_comman(self, channel: str, user: str, command: str):
         command_list = ""
