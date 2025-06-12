@@ -43,7 +43,7 @@ class ScrumMaster():
                     message.append("Vad gjorde jag igår?")
                     message.append("Vad ska jag göra idag?")
                     message.append("Ser jag några hinder för att utföra mitt uppdrag?")
-                    message = ["==----------------------------oOo----------------------------=="]
+                    message.append("==----------------------------oOo----------------------------==")
 
                     for line in message:
                         self.irc.send(f"PRIVMSG {self.channel} :{line}\r\n".encode('utf-8'))
